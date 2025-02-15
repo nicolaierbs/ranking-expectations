@@ -3,8 +3,9 @@ import game_loader, game_processor, team_processor, simulator
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
-num_simulations = 100
+num_simulations = 10000
 
 
 def run_simulation(df_past, df_future, df_team_point_statistics):
@@ -20,7 +21,7 @@ def run_simulation(df_past, df_future, df_team_point_statistics):
     return df_future_team_statistics['Platz'].to_dict()
 
 
-def plot(expectations):
+def plot_violin(expectations):
     # Convert to long format for Seaborn
     long_df = expectations.melt(var_name="Team", value_name="Platzierung")
 
@@ -37,6 +38,33 @@ def plot(expectations):
     
     for i, team in enumerate(expectations.columns):
         ax.text(i, 1, team, ha='center', va='top', rotation=45, fontsize=10)
+
+    plt.show()
+
+
+def plot_matrix(expectations):
+    # Count the number of each rank for each team
+    expectations = expectations.apply(pd.Series.value_counts).fillna(0).astype(int)
+    # Convert the count to a percentage
+    expectations = expectations / num_simulations * 100.0
+    print(expectations)
+    
+    # Plot the ranking expectations as a heatmap with the team names on the x axis and the count of each rank on the y axis
+    plt.figure(figsize=(10, 6))
+    ax = sns.heatmap(expectations, annot=True, fmt=".1f", cmap="Greens", cbar=False)
+
+
+    for t in ax.texts:
+        if t.get_text() == "0.0":
+            t.set_text("")
+        else:
+            t.set_text(t.get_text() + " %")
+
+    plt.xticks(rotation=45)
+    plt.title(f"Erwartete Platzierungen ({num_simulations} Simulationen)")
+    plt.xlabel("Team")
+    plt.ylabel("Platzierung")
+    plt.subplots_adjust(bottom=0.25)
 
     plt.show()
 
@@ -60,9 +88,9 @@ def main():
     df_team_point_statistics = team_processor.team_point_statistics(df_past_filtered)
 
     simulations = list()
-    for i in range(num_simulations):
+    for i in tqdm(range(num_simulations)):
         simulation = run_simulation(df_past, df_future, df_team_point_statistics)
-        logger.info(simulation)
+        logger.debug(f'Simulation: {simulation}')
         simulations.append(simulation)
 
     ranking_expectations = pd.DataFrame(simulations)
@@ -74,7 +102,7 @@ def main():
     logger.info(f"Rank count: \n{rank_counts}")
 
     # Plot the ranking expectations
-    plot(ranking_expectations)
+    plot_matrix(ranking_expectations)
 
     logger.info("Application finished")
 
