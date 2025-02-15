@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)  # Use __name__ for module-specific logging
 
 # 1. Console handler:
 console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.DEBUG)  # Console logs at DEBUG level or higher
+console_handler.setLevel(logging.INFO)  # Console logs at DEBUG level or higher
 console_formatter = logging.Formatter("%(levelname)s - %(message)s") # Simpler console format
 console_handler.setFormatter(console_formatter)
 logger.addHandler(console_handler)

@@ -8,3 +8,4 @@ def load_config(filepath="config.yaml"):
             return yaml.safe_load(f)  # Use safe_load to prevent arbitrary code execution
     except FileNotFoundError:
         logger.error(f'Configuration file not found at {filepath}')
+        return None
