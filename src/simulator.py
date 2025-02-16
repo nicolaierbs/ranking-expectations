@@ -1,6 +1,19 @@
 from logger import logger
 import pandas as pd
 import random
+import team_processor
+
+def run_simulation(df_past, df_future, df_team_point_statistics):
+    # Simulate future games
+    df_future = simulate_future_games(df_future, df_team_point_statistics)
+    logger.debug(f"{len(df_future.index)} simulated games")
+    # Combine past and future games
+    df_all = pd.concat([df_past, df_future])
+
+    # Get future ranking
+    df_future_team_statistics = team_processor.team_statistics(df_all)
+    logger.debug(f"Future ranking: \n{df_future_team_statistics.head(100)}")
+    return df_future_team_statistics['Platz'].to_dict()
 
 def guess_points(series):
     #Guess the points of a team based on the Ballpunkte statistics

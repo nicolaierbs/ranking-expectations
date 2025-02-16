@@ -1,4 +1,5 @@
 from logger import logger
+from team_processor import team_statistics, team_point_statistics
 
 
 def ranking(games_df):
@@ -33,3 +34,20 @@ def remove_invalid_games(df):
     # Remove all rows where the value of any column containing Ballpunkte is 0
     logger.debug("Removing invalid games")
     return df.loc[(df.loc[:, df.columns.str.contains("Ballpunkte")] != 0).all(axis=1)]
+
+
+def preprocess(df):
+    df_past, df_future = divide_games(df)
+    logger.info(f"{len(df_past.index)} played games loaded")
+        
+    df_past = extract_result(df_past)
+
+        # Get current ranking
+    df_team_statistics = team_statistics(df_past)
+    logger.info(f"Current ranking: \n{df_team_statistics.head(100)}")
+        
+        # Compute team statistics
+    df_past_filtered = remove_invalid_games(df_past)
+    logger.info(f"{len(df_past_filtered.index)} played games after filtering")
+    df_team_point_statistics = team_point_statistics(df_past_filtered)
+    return df_past,df_future,df_team_point_statistics
