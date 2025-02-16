@@ -1,5 +1,4 @@
 from logger import logger
-from config import load_config
 import pandas as pd
 
 def read_game_data(path):

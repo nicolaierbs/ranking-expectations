@@ -20,7 +20,7 @@ col1, col2 = st.columns([2, 1])
 url = col1.text_input("URL mit Spielplan")
 
 # Slider for selecting a value between 10 and 1000
-sim_count = col2.slider("Anzahl Simulationen:", min_value=1, max_value=1000)
+sim_count = col2.slider("Anzahl Simulationen:", value=10, min_value=1, max_value=1000, step=10)
 
 # Submit button
 

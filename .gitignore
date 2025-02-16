@@ -172,4 +172,4 @@ cython_debug/
 pyproject.toml
 uv.lock
 .python-version
-config.yaml
+.simple_env/
